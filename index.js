@@ -19,7 +19,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use('/api/movies', movieRoutes);
-app.use('/api/comments', require('./routes/commentRoutes')); // Ensure this line is correct
+app.use('/api/movies/comments', require('./routes/commentRoutes')); // Ensure this line is correct
 
 // Log mounted routes for debugging
 console.log('Mounted routes:');
