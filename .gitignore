@@ -10,3 +10,5 @@ firebase-adminsdk.json
 # Build / cache
 dist/
 coverage/
+
+dockerfile
