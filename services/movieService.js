@@ -1,5 +1,7 @@
 const axios = require("axios");
 require("dotenv").config();
+const NodeCache = require('node-cache');
+const cache = new NodeCache({ stdTTL: 24 * 60 * 60 });
 
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
 const OMDB_API_KEY = process.env.OMDB_API_KEY || ""; // Optional key
@@ -217,14 +219,19 @@ const fetchStreamingProviders = async (movieId, region) => {
 };
 
 const fetchTrendingMovies = async () => {
+  const cacheKey = 'trending_movies';
+  if (cache.has(cacheKey)) {
+    console.log('Serving trending from cache');
+    return cache.get(cacheKey);
+  }
   try {
-    const data = await makeApiCall(`${TMDB_BASE_URL}/trending/movie/week`, {
-      api_key: TMDB_API_KEY
-    });
-    return data.results || [];
+    const data = await makeApiCall(`${TMDB_BASE_URL}/trending/movie/week`, { api_key: TMDB_API_KEY });
+    const results = data.results || [];
+    cache.set(cacheKey, results);
+    return results;
   } catch (error) {
     console.error("Service Error fetching trending movies:", error.message);
-    return []; // Return empty array instead of throwing
+    return [];
   }
 };
 
